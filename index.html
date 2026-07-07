@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#66a96b" />
+    <title>말랑 오픽</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero-panel" aria-label="말랑 오픽 홈">
+        <div class="top-bar">
+          <div>
+            <p class="eyebrow">Daily OPIC care</p>
+            <h1>말랑 오픽</h1>
+          </div>
+          <button class="icon-button" id="installButton" type="button" hidden aria-label="앱 설치">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="pet-stage">
+          <div class="sun"></div>
+          <div class="shelf shelf-one"></div>
+          <div class="shelf shelf-two"></div>
+          <div class="pet-room" id="roomItems" aria-hidden="true"></div>
+          <div class="stage-route" aria-hidden="true">
+            <div class="stage-road"></div>
+            <div class="stage-marker reached"></div>
+            <div class="stage-marker"></div>
+            <div class="stage-marker"></div>
+            <div class="stage-marker"></div>
+          </div>
+          <div class="stage-place">
+            <span>여행 중</span>
+            <strong id="stageStopText">집 앞</strong>
+          </div>
+          <div class="pet" id="pet">
+            <div class="pet-horn left"></div>
+            <div class="pet-horn right"></div>
+            <div class="pet-wing left"></div>
+            <div class="pet-wing right"></div>
+            <div class="pet-ear left"></div>
+            <div class="pet-ear right"></div>
+            <div class="pet-face">
+              <span class="eye left"></span>
+              <span class="eye right"></span>
+              <span class="mouth"></span>
+              <span class="blush left"></span>
+              <span class="blush right"></span>
+            </div>
+            <div class="pet-belly"></div>
+            <div class="pet-tail"></div>
+          </div>
+          <div class="shadow"></div>
+        </div>
+
+        <div class="pet-card">
+          <div>
+            <p class="pet-name" id="petName">말랑이</p>
+            <p class="evolution-line" id="evolutionText">1단계 · 말랑 씨앗몬</p>
+            <p class="pet-message" id="petMessage">오늘 한 번만 말해도 충분해요.</p>
+          </div>
+          <button class="text-button" id="renameButton" type="button">이름</button>
+        </div>
+
+        <div class="daily-phrase-card">
+          <div class="daily-phrase-head">
+            <span>오늘의 구어 표현</span>
+            <button class="text-button" id="phraseCopyButton" type="button">복사</button>
+          </div>
+          <strong id="dailyPhraseText">It was totally worth it.</strong>
+          <p id="dailyPhraseMeaning">완전 그럴 가치가 있었어요.</p>
+          <small id="dailyPhraseExample">I was tired, but the trip was totally worth it.</small>
+        </div>
+
+        <div class="stats-grid" aria-label="학습 상태">
+          <div>
+            <span>레벨</span>
+            <strong id="levelText">1</strong>
+          </div>
+          <div>
+            <span>연속</span>
+            <strong><span id="streakText">0</span>일</strong>
+          </div>
+          <div>
+            <span>답변</span>
+            <strong><span id="answersText">0</span>개</strong>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span>성장 경험치</span>
+            <span id="xpText">0 / 100</span>
+          </div>
+          <div class="progress-track">
+            <div id="xpBar"></div>
+          </div>
+        </div>
+
+        <div class="journey-summary">
+          <div>
+            <span>현재 위치</span>
+            <strong id="currentStopText">집 앞</strong>
+          </div>
+          <div>
+            <span>다음 목적지</span>
+            <strong id="nextStopText">카페</strong>
+          </div>
+          <p id="journeyHint">오늘 답변하면 한 걸음 앞으로 가요.</p>
+        </div>
+      </section>
+
+      <section class="practice-panel" aria-label="오픽 말하기 연습">
+        <div class="tabs" role="tablist" aria-label="화면 선택">
+          <button class="tab active" type="button" data-view="mission">미션</button>
+          <button class="tab" type="button" data-view="garden">여행</button>
+          <button class="tab" type="button" data-view="history">기록</button>
+        </div>
+
+        <section class="view active" id="missionView">
+          <div class="mission-head">
+            <div>
+              <p class="eyebrow">Today's question</p>
+              <h2 id="questionTitle">오늘의 질문</h2>
+            </div>
+            <button class="icon-button" id="newQuestionButton" type="button" aria-label="새 질문">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v6h-6" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="question-box">
+            <p id="questionText"></p>
+            <div class="chips">
+              <span id="topicChip"></span>
+              <span id="levelChip"></span>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label class="field">
+              <span>목표</span>
+              <select id="targetLevel">
+                <option value="IM">IM</option>
+                <option value="IH" selected>IH</option>
+                <option value="AL">AL</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>시간</span>
+              <select id="durationSelect">
+                <option value="45">45초</option>
+                <option value="60" selected>60초</option>
+                <option value="90">90초</option>
+                <option value="120">120초</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="timer-card">
+            <div class="timer-ring" id="timerRing">
+              <span id="timerText">01:00</span>
+            </div>
+            <div class="recorder-actions">
+              <button class="primary-button" id="recordButton" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 15a4 4 0 0 0 4-4V7a4 4 0 0 0-8 0v4a4 4 0 0 0 4 4Z" />
+                  <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
+                </svg>
+                녹음 시작
+              </button>
+              <button class="secondary-button" id="speechButton" type="button">받아쓰기</button>
+              <button class="secondary-button" id="doneButton" type="button">완료</button>
+            </div>
+            <audio id="audioPlayback" controls hidden></audio>
+          </div>
+
+          <label class="answer-box">
+            <span>답변 메모</span>
+            <textarea id="answerNotes" rows="5" placeholder="말한 내용을 영어로 적거나 받아쓰기를 켜면 자동 분석해요."></textarea>
+          </label>
+
+          <div class="al-coach-card">
+            <div class="al-coach-head">
+              <div>
+                <span>AL 확장 코치</span>
+                <strong id="coachPrompt">짧은 답변을 더 구체적으로 늘려봐요.</strong>
+              </div>
+              <button class="text-button" id="coachRefreshButton" type="button">다른 질문</button>
+            </div>
+            <div class="coach-actions">
+              <button class="secondary-button" id="insertTemplateButton" type="button">답변 틀 넣기</button>
+              <button class="secondary-button" id="insertPhraseButton" type="button">오늘 표현 넣기</button>
+              <button class="secondary-button" id="insertProblemButton" type="button">문제해결 틀</button>
+            </div>
+          </div>
+
+          <div class="checklist" aria-label="오늘의 답변 루브릭">
+            <label><input type="checkbox" value="length" /> 40초 이상 이어서 말했다</label>
+            <label><input type="checkbox" value="structure" /> 시작-이유-마무리 흐름이 있다</label>
+            <label><input type="checkbox" value="detail" /> 개인 경험이나 장면을 넣었다</label>
+            <label><input type="checkbox" value="tense" /> 과거 또는 미래 시제를 사용했다</label>
+            <label><input type="checkbox" value="connectors" /> 연결어를 사용했다</label>
+            <label><input type="checkbox" value="problem" /> 문제 해결 과정을 설명했다</label>
+          </div>
+
+          <div class="score-card" aria-live="polite">
+            <span>예상 등급</span>
+            <strong id="scorePreview">IM1 연습</strong>
+            <p id="scoreAdvice">공식 점수가 아닌 개인 학습용 참고 지표예요.</p>
+            <div class="next-feedback">
+              <b id="nextLevelText">다음 목표: IM2 느낌</b>
+              <ul id="feedbackList"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="gardenView">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Malang's route</p>
+              <h2>오픽 여행</h2>
+            </div>
+          </div>
+          <div class="route-card">
+            <div class="route-line" id="routeLine"></div>
+          </div>
+          <div class="reward-grid" id="rewardGrid"></div>
+        </section>
+
+        <section class="view" id="historyView">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Practice log</p>
+              <h2>답변 기록</h2>
+            </div>
+            <button class="text-button danger" id="resetButton" type="button">초기화</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+      </section>
+    </main>
+
+    <template id="rewardTemplate">
+      <article class="reward-card">
+        <div class="reward-icon"></div>
+        <h3></h3>
+        <p></p>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
