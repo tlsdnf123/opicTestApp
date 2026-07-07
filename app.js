@@ -221,6 +221,7 @@ let deferredInstallPrompt = null;
 let recognition = null;
 let recognizing = false;
 let coachPromptIndex = 0;
+let recorderMimeType = "";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
@@ -355,13 +356,19 @@ async function toggleRecording() {
     return;
   }
 
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    setMessage("이 브라우저에서는 녹음이 제한돼요. HTTPS Safari나 Chrome 최신 버전에서 다시 시도해보세요.");
+    return;
+  }
+
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     chunks = [];
-    mediaRecorder = new MediaRecorder(stream);
+    recorderMimeType = pickRecorderMimeType();
+    mediaRecorder = recorderMimeType ? new MediaRecorder(stream, { mimeType: recorderMimeType }) : new MediaRecorder(stream);
     mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
     mediaRecorder.onstop = () => {
-      const blob = new Blob(chunks, { type: "audio/webm" });
+      const blob = new Blob(chunks, { type: mediaRecorder.mimeType || recorderMimeType || "audio/mp4" });
       elements.audioPlayback.src = URL.createObjectURL(blob);
       elements.audioPlayback.hidden = false;
       stream.getTracks().forEach((track) => track.stop());
@@ -375,6 +382,13 @@ async function toggleRecording() {
   } catch {
     setMessage("마이크 권한이 필요해요. 권한을 허용하거나 완료 버튼으로 수동 기록해도 괜찮아요.");
   }
+}
+
+function pickRecorderMimeType() {
+  if (!window.MediaRecorder?.isTypeSupported) return "";
+  return ["audio/mp4", "audio/aac", "audio/webm;codecs=opus", "audio/webm"].find((type) =>
+    MediaRecorder.isTypeSupported(type),
+  ) || "";
 }
 
 function stopRecording() {
