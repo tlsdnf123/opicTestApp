@@ -576,6 +576,9 @@ function updateScorePreview() {
 }
 
 function completeMission() {
+  stopRecording();
+  stopSpeechRecognition();
+
   const question = questions[state.currentQuestionIndex];
   const date = todayKey();
   const checklistScore = checkedCount();
@@ -617,7 +620,6 @@ function completeMission() {
   $$(".checklist input").forEach((input) => {
     input.checked = false;
   });
-  stopSpeechRecognition();
   saveState();
   render();
   updateScorePreview();
