@@ -72,6 +72,209 @@ button {
   min-width: 0;
 }
 
+.app-mode {
+  min-height: 100dvh;
+  padding-bottom: calc(86px + env(safe-area-inset-bottom));
+}
+
+.app-mode .app-shell {
+  width: min(100% - 18px, 560px);
+  min-height: auto;
+  padding: 10px 0 18px;
+  display: block;
+}
+
+.app-mode .hero-panel {
+  display: none;
+}
+
+.app-mode .practice-panel {
+  min-height: calc(100dvh - 28px - env(safe-area-inset-bottom));
+  padding: 14px;
+  border-radius: 24px;
+}
+
+.app-mode .tabs {
+  position: fixed;
+  left: 50%;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 30;
+  width: min(calc(100% - 18px), 560px);
+  margin: 0;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid rgba(102, 169, 107, 0.2);
+  background: rgba(255, 253, 247, 0.92);
+  box-shadow: 0 18px 40px rgba(45, 66, 45, 0.18);
+  backdrop-filter: blur(18px);
+  transform: translateX(-50%);
+}
+
+.app-mode .tab {
+  min-height: 48px;
+  padding: 5px 4px;
+  font-size: 0.78rem;
+}
+
+.app-mode .view.active {
+  display: grid;
+  gap: 14px;
+}
+
+.app-mode #missionView .pet-stage {
+  order: -1;
+  min-height: 230px;
+}
+
+.app-mode #missionView .mission-head,
+.app-mode #missionView .question-box,
+.app-mode #missionView .control-row,
+.app-mode #missionView .timer-card {
+  margin-top: 0;
+}
+
+.app-mode .question-box {
+  padding: 15px;
+}
+
+.app-mode .question-box p {
+  font-size: 1.08rem;
+}
+
+.app-mode .timer-card {
+  grid-template-columns: 84px 1fr;
+  padding: 14px;
+}
+
+.app-mode .timer-ring {
+  width: 82px;
+  height: 82px;
+}
+
+.app-mode .recorder-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.app-mode .primary-button,
+.app-mode .secondary-button {
+  min-height: 44px;
+}
+
+.app-mode #speechButton {
+  display: none;
+}
+
+.app-mode .daily-phrase-card,
+.app-mode .pet-card,
+.app-mode .progress-wrap,
+.app-mode .journey-summary,
+.app-mode .route-card,
+.app-mode .history-list {
+  margin-top: 0;
+}
+
+.mission-feedback-area {
+  display: grid;
+  gap: 12px;
+}
+
+.mission-feedback-area[hidden] {
+  display: none;
+}
+
+.mission-result-card {
+  padding: 15px;
+  border: 1px solid rgba(102, 169, 107, 0.22);
+  border-radius: 18px;
+  background: rgba(232, 246, 236, 0.78);
+}
+
+.mission-result-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--leaf-dark);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.mission-result-card strong {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 1.18rem;
+}
+
+.mission-result-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.survey-card {
+  padding: 15px;
+  border: 1px solid rgba(102, 169, 107, 0.22);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.survey-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.survey-head span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--leaf-dark);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.survey-head strong {
+  font-size: 1.1rem;
+}
+
+.survey-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.survey-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.survey-option span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(102, 169, 107, 0.18);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.survey-option input:checked + span {
+  color: var(--ink);
+  border-color: rgba(102, 169, 107, 0.44);
+  background: rgba(102, 169, 107, 0.18);
+}
+
+.survey-card p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
 .top-bar,
 .mission-head,
 .section-head,

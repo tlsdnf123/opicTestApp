@@ -13,19 +13,51 @@ function seededRandom(seed) {
 }
 
 function todayQuestionIndexes() {
-  if (state.dailyPlanDate === todayKey() && state.dailyQuestionIndexes?.length) {
+  const selectedTopics = state.surveySelectedTopics?.length ? state.surveySelectedTopics : defaultState.surveySelectedTopics;
+  const surveyKey = selectedTopics.slice().sort().join(",");
+
+  if (
+    state.dailyPlanDate === todayKey() &&
+    state.dailyPlanSurvey === surveyKey &&
+    state.dailyQuestionIndexes?.length &&
+    state.dailyQuestionIndexes.every((index) => questions[index]?.type)
+  ) {
     return state.dailyQuestionIndexes;
   }
 
   const random = seededRandom(todayOrdinal() + questions.length * 31);
-  const indexes = questions.map((_, index) => index);
-  for (let index = indexes.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(random() * (index + 1));
-    [indexes[index], indexes[swapIndex]] = [indexes[swapIndex], indexes[index]];
-  }
+  const shuffle = (items) => {
+    const next = [...items];
+    for (let index = next.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(random() * (index + 1));
+      [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
+    }
+    return next;
+  };
+  const indexed = questions.map((question, index) => ({ question, index })).filter((item) => item.question.type);
+  const byType = (type, filter = () => true) =>
+    shuffle(indexed.filter((item) => item.question.type === type && filter(item.question))).map((item) => item.index);
+  const byTopic = (filter = () => true) =>
+    shuffle(indexed.filter((item) => selectedTopics.includes(item.question.topicKey) && filter(item.question))).map(
+      (item) => item.index,
+    );
+  const plan = [
+    ...byType("warmup").slice(0, 1),
+    ...byTopic().slice(0, 8),
+    ...byTopic((question) => ["comparison", "experience", "problem"].includes(question.type)).slice(0, 3),
+    ...byType("roleplay").slice(0, 3),
+    ...byType("unexpected").slice(0, 2),
+    ...byType("wrapup").slice(0, 1),
+  ];
+  const fallback = shuffle(indexed.map((item) => item.index));
+  const indexes = [...new Set([...plan, ...fallback])].slice(0, 15);
+
   state.dailyPlanDate = todayKey();
+  state.dailyPlanSurvey = surveyKey;
   state.dailyQuestionIndexes = indexes.slice(0, Math.min(15, indexes.length));
   state.currentQuestionIndex = state.dailyQuestionIndexes[0] ?? 0;
+  state.examStartedAt = new Date().toISOString();
+  state.examCompletedCount = 0;
   saveState();
   return state.dailyQuestionIndexes;
 }
@@ -37,9 +69,25 @@ function selectQuestion(index = state.currentQuestionIndex) {
   state.currentQuestionIndex = questions.indexOf(question);
   saveState();
   elements.questionText.textContent = question.text;
-  elements.topicChip.textContent = question.topic;
-  elements.levelChip.textContent = question.level;
+  const position = Math.max(1, dailyIndexes.indexOf(state.currentQuestionIndex) + 1);
+  elements.topicChip.textContent = `${position}/15 · ${question.topic}`;
+  elements.levelChip.textContent = `${questionTypeLabel(question.type)} · 난이도 ${question.level}`;
   updateStageScene?.();
+}
+
+function questionTypeLabel(type) {
+  const labels = {
+    warmup: "워밍업",
+    topic: "선택 주제",
+    experience: "경험 설명",
+    comparison: "비교/변화",
+    roleplay: "롤플레이",
+    unexpected: "돌발",
+    problem: "문제 해결",
+    opinion: "의견",
+    wrapup: "마무리",
+  };
+  return labels[type] || "질문";
 }
 
 function nextQuestion() {
@@ -102,6 +150,7 @@ async function toggleRecording() {
     elements.recordButton.innerHTML = recordIcon() + "녹음 중지";
     updateTimer(Number(elements.durationSelect.value));
     startTimer();
+    startSpeechRecognition();
     setMessage("좋아요. 완벽한 문장보다 멈추지 않고 이어가는 게 먼저예요.");
   } catch {
     setMessage("마이크 권한이 필요해요. 권한을 허용하거나 완료 버튼으로 수동 기록해도 괜찮아요.");
@@ -127,8 +176,10 @@ function stopRecording() {
 function setupSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    elements.speechButton.disabled = true;
-    elements.speechButton.textContent = "받아쓰기 미지원";
+    if (elements.speechButton) {
+      elements.speechButton.disabled = true;
+      elements.speechButton.textContent = "받아쓰기 미지원";
+    }
     return;
   }
 
@@ -156,32 +207,41 @@ function setupSpeechRecognition() {
 }
 
 function toggleSpeechRecognition() {
-  if (!recognition) {
-    setMessage("이 브라우저는 받아쓰기를 지원하지 않아요. 답변 메모에 직접 적으면 자동 체크돼요.");
-    return;
-  }
-
   if (recognizing) {
     stopSpeechRecognition();
     return;
   }
+  startSpeechRecognition(true);
+}
+
+function startSpeechRecognition(showMessage = false) {
+  if (!recognition) {
+    if (showMessage) {
+      setMessage("이 브라우저는 받아쓰기를 지원하지 않아요. 답변 메모에 직접 적으면 자동 체크돼요.");
+    }
+    return;
+  }
 
   recognizing = true;
-  elements.speechButton.classList.add("listening");
-  elements.speechButton.textContent = "받아쓰기 중지";
+  elements.speechButton?.classList.add("listening");
+  if (elements.speechButton) elements.speechButton.textContent = "받아쓰기 중지";
   try {
     recognition.start();
-    setMessage("영어로 말하면 답변 메모에 자동으로 들어가고 체크도 갱신돼요.");
+    if (showMessage) {
+      setMessage("영어로 말하면 답변 메모에 자동으로 들어가고 체크도 갱신돼요.");
+    }
   } catch {
     stopSpeechRecognition();
-    setMessage("받아쓰기를 시작하지 못했어요. HTTPS나 Chrome 브라우저에서 더 잘 작동해요.");
+    if (showMessage) {
+      setMessage("받아쓰기를 시작하지 못했어요. HTTPS나 Chrome 브라우저에서 더 잘 작동해요.");
+    }
   }
 }
 
 function stopSpeechRecognition() {
   recognizing = false;
-  elements.speechButton.classList.remove("listening");
-  elements.speechButton.textContent = "받아쓰기";
+  elements.speechButton?.classList.remove("listening");
+  if (elements.speechButton) elements.speechButton.textContent = "받아쓰기";
   recognition?.stop();
 }
 
@@ -320,6 +380,7 @@ function completeMission() {
   }
 
   state.totalAnswers += 1;
+  state.examCompletedCount = Math.min(15, (state.examCompletedCount || 0) + 1);
   const stepGain = checklistScore >= 4 ? 2 : 1;
   state.steps = Math.min(journeyStops[journeyStops.length - 1].step, (state.steps || 0) + stepGain);
   state.xp += baseXp + bonusXp;
@@ -336,9 +397,13 @@ function completeMission() {
     notes: elements.answerNotes.value.trim(),
     checklistScore,
     estimatedRating: estimatedRating.label,
+    examPosition: state.examCompletedCount,
+    questionType: question.type || "",
     stepGain,
   });
   state.history = state.history.slice(0, 20);
+
+  const feedbackMessage = makeFeedback(checklistScore, estimatedRating);
 
   elements.answerNotes.value = "";
   $$(".checklist input").forEach((input) => {
@@ -347,7 +412,10 @@ function completeMission() {
   saveState();
   render();
   updateScorePreview();
-  setMessage(makeFeedback(checklistScore, estimatedRating));
+  setMessage(feedbackMessage);
+  if (typeof showMissionFeedback === "function") {
+    showMissionFeedback(estimatedRating.label, feedbackMessage);
+  }
   nextQuestion();
 }
 

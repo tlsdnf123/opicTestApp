@@ -71,7 +71,7 @@ function render() {
   elements.answersText.textContent = state.totalAnswers;
   elements.xpText.textContent = `${state.xp} / 100`;
   elements.xpBar.style.width = `${state.xp}%`;
-  elements.targetLevel.value = state.targetLevel;
+  if (elements.targetLevel) elements.targetLevel.value = state.targetLevel;
   elements.pet.className = `pet level-${Math.min(4, Math.max(1, Math.ceil(state.level / 2)))} evolution-${evolution.id}`;
   updateStageScene();
   elements.currentStopText.textContent = stop.name;
