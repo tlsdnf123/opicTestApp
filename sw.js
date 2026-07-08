@@ -1,13 +1,13 @@
-const CACHE_NAME = "malang-opic-v2";
+const CACHE_NAME = "malang-opic-v18";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./assets/js/data.js",
-  "./assets/js/storage.js",
-  "./assets/js/practice.js",
-  "./assets/js/journey.js",
-  "./app.js",
+  "./styles.css?v=18",
+  "./assets/js/data.js?v=18",
+  "./assets/js/storage.js?v=18",
+  "./assets/js/practice.js?v=18",
+  "./assets/js/journey.js?v=18",
+  "./app.js?v=18",
   "./manifest.webmanifest",
   "./icon.svg",
 ];

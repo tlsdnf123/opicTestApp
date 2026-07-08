@@ -4,26 +4,48 @@ function formatTimer(seconds) {
   return `${minutes}:${rest}`;
 }
 
+function seededRandom(seed) {
+  let value = seed % 2147483647;
+  return () => {
+    value = (value * 16807) % 2147483647;
+    return (value - 1) / 2147483646;
+  };
+}
+
+function todayQuestionIndexes() {
+  if (state.dailyPlanDate === todayKey() && state.dailyQuestionIndexes?.length) {
+    return state.dailyQuestionIndexes;
+  }
+
+  const random = seededRandom(todayOrdinal() + questions.length * 31);
+  const indexes = questions.map((_, index) => index);
+  for (let index = indexes.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [indexes[index], indexes[swapIndex]] = [indexes[swapIndex], indexes[index]];
+  }
+  state.dailyPlanDate = todayKey();
+  state.dailyQuestionIndexes = indexes.slice(0, Math.min(15, indexes.length));
+  state.currentQuestionIndex = state.dailyQuestionIndexes[0] ?? 0;
+  saveState();
+  return state.dailyQuestionIndexes;
+}
+
 function selectQuestion(index = state.currentQuestionIndex) {
-  const preferred = questions.filter((question) => question.level === state.targetLevel);
-  const pool = preferred.length ? preferred : questions;
-  const question = pool[index % pool.length];
+  const dailyIndexes = todayQuestionIndexes();
+  const questionIndex = dailyIndexes.includes(index) ? index : dailyIndexes[0];
+  const question = questions[questionIndex];
   state.currentQuestionIndex = questions.indexOf(question);
   saveState();
   elements.questionText.textContent = question.text;
   elements.topicChip.textContent = question.topic;
   elements.levelChip.textContent = question.level;
+  updateStageScene?.();
 }
 
 function nextQuestion() {
-  const start = state.currentQuestionIndex + 1;
-  const matchingIndexes = questions
-    .map((question, index) => ({ question, index }))
-    .filter((item) => item.question.level === state.targetLevel)
-    .map((item) => item.index);
-  const currentPosition = matchingIndexes.indexOf(state.currentQuestionIndex);
-  state.currentQuestionIndex =
-    matchingIndexes[(currentPosition + 1 + matchingIndexes.length) % matchingIndexes.length] ?? start % questions.length;
+  const dailyIndexes = todayQuestionIndexes();
+  const currentPosition = dailyIndexes.indexOf(state.currentQuestionIndex);
+  state.currentQuestionIndex = dailyIndexes[(currentPosition + 1 + dailyIndexes.length) % dailyIndexes.length];
   selectQuestion(state.currentQuestionIndex);
 }
 

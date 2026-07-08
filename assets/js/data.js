@@ -157,14 +157,35 @@ const rewards = [
   { id: "badge", icon: "배지", title: "시험장 배지", requirement: "시험장 도착", unlock: (state) => state.steps >= 24 },
 ];
 
+const companionMissions = [
+  {
+    id: "quokka",
+    animal: "quokka",
+    treat: "leaf",
+    footprint: "round-paw",
+  },
+  {
+    id: "rabbit",
+    animal: "rabbit",
+    treat: "carrot",
+    footprint: "long-paw",
+  },
+  {
+    id: "cat",
+    animal: "cat",
+    treat: "fish",
+    footprint: "soft-paw",
+  },
+];
+
 const journeyStops = [
-  { name: "집 앞", topic: "자기소개, 집, 동네", step: 0 },
-  { name: "카페", topic: "음식, 친구, 취미", step: 4 },
-  { name: "공원", topic: "건강, 루틴", step: 8 },
-  { name: "지하철역", topic: "교통, 약속, 돌발", step: 12 },
-  { name: "공항", topic: "여행 준비, 예약", step: 16 },
-  { name: "여행지", topic: "경험, 비교, 변화", step: 20 },
-  { name: "시험장", topic: "종합 모의 답변", step: 24 },
+  { name: "집 앞", topic: "자기소개, 집, 동네", step: 0, scene: "home" },
+  { name: "카페", topic: "음식, 친구, 취미", step: 4, scene: "cafe" },
+  { name: "공원", topic: "건강, 루틴", step: 8, scene: "park" },
+  { name: "지하철역", topic: "교통, 약속, 돌발", step: 12, scene: "station" },
+  { name: "공항", topic: "여행 준비, 예약", step: 16, scene: "airport" },
+  { name: "여행지", topic: "경험, 비교, 변화", step: 20, scene: "trip" },
+  { name: "시험장", topic: "종합 모의 답변", step: 24, scene: "test" },
 ];
 
 const evolutions = [
@@ -207,6 +228,10 @@ const defaultState = {
   steps: 0,
   lastPracticeDate: "",
   currentQuestionIndex: 0,
+  dailyPlanDate: "",
+  dailyQuestionIndexes: [],
+  companionDate: "",
+  companionId: "",
   targetLevel: "IH",
   history: [],
 };

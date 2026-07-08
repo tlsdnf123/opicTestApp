@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#66a96b" />
     <title>말랑 오픽</title>
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=18" />
   </head>
   <body>
     <main class="app-shell">
@@ -28,15 +28,14 @@
           <div class="shelf shelf-one"></div>
           <div class="shelf shelf-two"></div>
           <div class="pet-room" id="roomItems" aria-hidden="true"></div>
-          <div class="stage-route" aria-hidden="true">
-            <div class="stage-road"></div>
-            <div class="stage-marker reached"></div>
-            <div class="stage-marker"></div>
-            <div class="stage-marker"></div>
-            <div class="stage-marker"></div>
+          <div class="stage-route" id="stageRoute" aria-hidden="true"></div>
+          <div class="footprint-trail" id="footprintTrail" aria-hidden="true"></div>
+          <div class="stack-badge">
+            <span>오늘 스택</span>
+            <strong id="dailyStackText">0</strong>
           </div>
           <div class="stage-place">
-            <span>여행 중</span>
+            <span>현재 위치</span>
             <strong id="stageStopText">집 앞</strong>
           </div>
           <div class="pet" id="pet">
@@ -54,6 +53,10 @@
               <span class="blush right"></span>
             </div>
             <div class="pet-belly"></div>
+            <div class="pet-paw left"></div>
+            <div class="pet-paw right"></div>
+            <div class="pet-sparkle one"></div>
+            <div class="pet-sparkle two"></div>
             <div class="pet-tail"></div>
           </div>
           <div class="shadow"></div>
@@ -65,7 +68,10 @@
             <p class="evolution-line" id="evolutionText">1단계 · 말랑 씨앗몬</p>
             <p class="pet-message" id="petMessage">오늘 한 번만 말해도 충분해요.</p>
           </div>
-          <button class="text-button" id="renameButton" type="button">이름</button>
+          <div class="pet-actions">
+            <button class="text-button" id="renameButton" type="button">이름</button>
+            <button class="text-button danger" id="quickResetButton" type="button">초기화</button>
+          </div>
         </div>
 
         <div class="daily-phrase-card">
@@ -256,10 +262,10 @@
       </article>
     </template>
 
-    <script src="assets/js/data.js"></script>
-    <script src="assets/js/storage.js"></script>
-    <script src="assets/js/practice.js"></script>
-    <script src="assets/js/journey.js"></script>
-    <script src="app.js"></script>
+    <script src="assets/js/data.js?v=18"></script>
+    <script src="assets/js/storage.js?v=18"></script>
+    <script src="assets/js/practice.js?v=18"></script>
+    <script src="assets/js/journey.js?v=18"></script>
+    <script src="app.js?v=18"></script>
   </body>
 </html>

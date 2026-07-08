@@ -14,6 +14,7 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
 const elements = {
+  petStage: $(".pet-stage"),
   pet: $("#pet"),
   petName: $("#petName"),
   evolutionText: $("#evolutionText"),
@@ -31,6 +32,9 @@ const elements = {
   nextStopText: $("#nextStopText"),
   journeyHint: $("#journeyHint"),
   stageStopText: $("#stageStopText"),
+  stageRoute: $("#stageRoute"),
+  dailyStackText: $("#dailyStackText"),
+  footprintTrail: $("#footprintTrail"),
   roomItems: $("#roomItems"),
   questionText: $("#questionText"),
   topicChip: $("#topicChip"),
@@ -109,15 +113,8 @@ function bindEvents() {
       render();
     }
   });
-  $("#resetButton").addEventListener("click", () => {
-    if (window.confirm("모든 성장 기록을 초기화할까요?")) {
-      state = { ...defaultState };
-      saveState();
-      render();
-      selectQuestion();
-      setMessage("다시 시작해도 좋아요. 오늘 한 문장이면 충분해요.");
-    }
-  });
+  $("#quickResetButton").addEventListener("click", resetGrowthState);
+  $("#resetButton").addEventListener("click", resetGrowthState);
 
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
@@ -132,6 +129,17 @@ function bindEvents() {
     deferredInstallPrompt = null;
     elements.installButton.hidden = true;
   });
+}
+
+function resetGrowthState() {
+  if (window.confirm("모든 성장 기록을 초기화할까요?")) {
+    state = { ...defaultState };
+    saveState();
+    render();
+    selectQuestion();
+    updateScorePreview();
+    setMessage("다시 시작해도 좋아요. 오늘 한 문장이면 충분해요.");
+  }
 }
 
 function registerServiceWorker() {
